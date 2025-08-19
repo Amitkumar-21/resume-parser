@@ -3,7 +3,7 @@ import json
 import re
 import streamlit as st
 from pypdf import PdfReader
-from resumeparser import ats_extractor
+from resumeparser import ats_extractor  # your local file
 
 # Folder to save uploaded PDFs
 UPLOAD_PATH = "__DATA__"

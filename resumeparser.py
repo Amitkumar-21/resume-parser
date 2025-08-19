@@ -1,14 +1,16 @@
+import os
 from groq import Groq
-import yaml
 
-api_key = None
-CONFIG_PATH = r"config.yaml"
+# Get API key from environment variable
+api_key = os.getenv("GROQ_API_KEY")
+if not api_key:
+    raise ValueError("Please set the GROQ_API_KEY environment variable.")
 
-with open(CONFIG_PATH) as file:
-    data = yaml.load(file, Loader=yaml.FullLoader)
-    api_key = data['GROQ_API_KEY']
 
-def ats_extractor(resume_data):
+def ats_extractor(resume_data: str) -> str:
+    """
+    Extracts resume information using Groq API and returns JSON string.
+    """
     prompt = '''
     You are an AI bot designed to act as a professional for parsing resumes. 
     You are given a resume and your job is to extract the following information:
@@ -22,6 +24,7 @@ def ats_extractor(resume_data):
 
     Give the extracted information in JSON format only.
     '''
+
     groq_client = Groq(api_key=api_key)
 
     response = groq_client.chat.completions.create(
