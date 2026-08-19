@@ -3,6 +3,8 @@
 venv/
 env/
 ENV/
+parse/
+
 
 # Uploaded Data & Output Files
 __DATA__/
