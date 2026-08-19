@@ -1,4 +1,33 @@
-venv
+# Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+
+# Uploaded Data & Output Files
+__DATA__/
+
+# Environment Variables & Secrets
+.env
+.env.*
 config.yaml
+
+# Python Byte-code & Cache
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+
+# IDEs & Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS Specific
+.DS_Store
+Thumbs.db
+
+# Testing & Notebooks
+.pytest_cache/
+.ipynb_checkpoints
