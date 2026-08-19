@@ -28,7 +28,7 @@ def ats_extractor(resume_data: str) -> str:
     groq_client = Groq(api_key=api_key)
 
     response = groq_client.chat.completions.create(
-        model="llama3-70b-8192",
+        model="openai/gpt-oss-120b",
         messages=[
             {"role": "system", "content": prompt},
             {"role": "user", "content": resume_data}
