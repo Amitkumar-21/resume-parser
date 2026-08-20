@@ -25,12 +25,16 @@ def ats_extractor(resume_data: str) -> str:
       "education": list of objects or null,
       "technical_skills": list of strings,
       "soft_skills": list of strings,
-      "projects": list of objects
+      "projects": list of objects,
+      "achievements": list of objects with title, description, and date (or [] if none)
     }
 
     Rules:
     - Extract full URLs for github_url (e.g., https://github.com/username) and linkedin_url (e.g., https://www.linkedin.com/in/username). Look closely at any Extracted Links/URLs section or inline text.
     - Extract ALL projects mentioned in the resume under "projects". Do not skip or omit any project.
+    - Extract ALL achievements, honors, awards, hackathon finalist positions/rankings, competitive programming stats, and recognitions under "achievements". Format each item as {"title": "...", "description": "...", "date": "..."} (use null or "" for missing dates/descriptions). Return [] if no achievements are present.
+    - Do NOT classify general work experience, education, projects, certifications, or skills as achievements unless explicitly presented as achievements in the resume.
+    - Preserve original wording and details from the resume as much as possible. Do not hallucinate achievements or invent dates/ranks.
     - If a field is missing or not present in the resume, set its value to null (or [] for lists).
     - Return ONLY valid JSON matching this schema.
     '''
