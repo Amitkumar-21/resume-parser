@@ -1,18 +1,21 @@
-# 📄 ATS Resume Parser
+# 📄 ATS Resume Parser (React + FastAPI + Groq)
 
-An AI-powered Applicant Tracking System (ATS) Resume Parser built with **Streamlit**, **PyPDF**, and the **Groq API**. It extracts unstructured text from PDF resumes and converts candidate profile details into structured JSON format.
+An AI-powered Applicant Tracking System (ATS) Resume Parser featuring a modern **React + Vite** frontend, a **FastAPI** backend, and fast LLM inference powered by the **Groq API**.
+
+It extracts unstructured text and hidden PDF hyperlink annotations from candidate resumes and parses them into structured JSON format.
 
 ---
 
 ## ✨ Features
 
-- **PDF Text Extraction**: Uses `pypdf` to parse raw text from uploaded PDF resumes.
-- **AI-Powered Information Extraction**: Leverages Groq's fast LLM inference to extract:
-  - Full Name & Contact Info (Email, LinkedIn, GitHub)
-  - Employment History & Experience
-  - Technical & Soft Skills
-- **Structured JSON Output**: Displays formatted JSON for easy integration with downstream ATS or database systems.
-- **Interactive UI**: Simple and intuitive web interface built using Streamlit.
+- **Embedded Hyperlink Extraction**: Extracts both visible text AND embedded PDF link annotations (`/Annots` -> `/URI`) using `pypdf`, ensuring hidden **LinkedIn**, **GitHub**, and **Portfolio** URLs are captured accurately.
+- **FastAPI Backend Service**: Exposes `POST /api/parse-resume` with CORS middleware configured for full client-server decoupling.
+- **Modern React + Vite Frontend**:
+  - Drag-and-drop PDF resume upload dropzone.
+  - Real-time loading indicator and error handling.
+  - Candidate profile card displaying **Name**, **Email** (mailto), **Phone**, **LinkedIn**, **GitHub**, **Portfolio URLs**, **Technical Skills pills**, **Education**, and **Projects**.
+- **Structured JSON Engine**: Uses Groq API with enforced JSON output mode (`response_format={"type": "json_object"}`) and an extended token budget to extract all skills, education details, and project portfolios without omission.
+- **Legacy Streamlit Support**: Preserves the original Streamlit interface ([`app.py`](app.py)).
 
 ---
 
@@ -20,11 +23,18 @@ An AI-powered Applicant Tracking System (ATS) Resume Parser built with **Streaml
 
 ```text
 resume-parser/
-├── app.py           # Streamlit web application interface
-├── resumeparser.py  # Groq API prompt and parsing logic
-├── requirements.txt # Project dependencies
-├── Procfile         # Deployment configuration
-└── .gitignore       # Git ignore rules
+├── api.py           # FastAPI backend server (POST /api/parse-resume)
+├── resumeparser.py  # PDF text & link extraction + Groq API parsing logic
+├── app.py           # Legacy Streamlit UI interface
+├── requirements.txt # Python dependencies (FastAPI, PyPDF, Groq, Streamlit)
+├── frontend/        # React + Vite frontend application
+│   ├── src/
+│   │   ├── App.jsx  # Main Candidate Dashboard & Upload Dropzone
+│   │   ├── index.css# Tailwind CSS styling & dark theme
+│   │   └── main.jsx
+│   ├── package.json # Frontend dependencies (React, Vite, Tailwind, Lucide)
+│   └── vite.config.js
+└── README.md
 ```
 
 ---
@@ -32,37 +42,71 @@ resume-parser/
 ## ⚡ Quick Start
 
 ### 1. Prerequisites
-Ensure you have **Python 3.8+** installed and obtain a free API key from [Groq Console](https://console.groq.com/).
+- **Python 3.8+**
+- **Node.js 18+** & `npm`
+- Free API key from [Groq Console](https://console.groq.com/)
 
-### 2. Clone Repository & Install Dependencies
-```bash
-git clone https://github.com/Amitkumar-21/resume-parser.git
-cd resume-parser
+---
 
-# Create and activate virtual environment (optional)
-python -m venv parse
-# On Windows: parse\Scripts\activate
-# On macOS/Linux: source parse/bin/activate
+### 2. Backend Setup (FastAPI)
 
-# Install required packages
-pip install streamlit pypdf groq
-```
+1. **Clone Repository & Activate Environment**:
+   ```bash
+   git clone https://github.com/Amitkumar-21/resume-parser.git
+   cd resume-parser
 
-### 3. Set API Key & Run Application
+   # Create virtual environment
+   python -m venv parse
 
-Set your Groq API key in your terminal environment:
+   # Activate virtual environment
+   # On Windows (PowerShell):
+   parse\Scripts\activate
+   # On macOS/Linux:
+   source parse/bin/activate
+   ```
 
-**Windows (PowerShell):**
-```powershell
-$env:GROQ_API_KEY="your_groq_api_key_here"
-```
+2. **Install Python Dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-**macOS / Linux:**
-```bash
-export GROQ_API_KEY="your_groq_api_key_here"
-```
+3. **Set Groq API Key**:
+   - **Windows (PowerShell)**:
+     ```powershell
+     $env:GROQ_API_KEY="your_groq_api_key_here"
+     ```
+   - **macOS / Linux**:
+     ```bash
+     export GROQ_API_KEY="your_groq_api_key_here"
+     ```
 
-Start the Streamlit app:
+4. **Start FastAPI Backend**:
+   ```bash
+   uvicorn api:app --reload --port 8000
+   ```
+   *FastAPI server running at: `http://localhost:8000`*
+
+---
+
+### 3. Frontend Setup (React + Vite)
+
+1. **Open a new terminal, navigate to `frontend` and install packages**:
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+2. **Start Vite Dev Server**:
+   ```bash
+   npm run dev
+   ```
+   *React application running at: `http://localhost:5173`*
+
+---
+
+### 4. (Optional) Run Streamlit App
+
+If you prefer the original Streamlit interface:
 ```bash
 streamlit run app.py
 ```
@@ -71,7 +115,8 @@ streamlit run app.py
 
 ## 🛠️ Tech Stack
 
-- **Frontend / UI**: [Streamlit](https://streamlit.io/)
-- **PDF Processing**: [PyPDF](https://pypdf.readthedocs.io/)
-- **LLM Provider**: [Groq API](https://groq.com/)
-- **Language**: Python 3
+- **Frontend**: [React](https://react.dev/), [Vite](https://vitejs.dev/), [Tailwind CSS](https://tailwindcss.com/), [Lucide React Icons](https://lucide.dev/)
+- **Backend API**: [FastAPI](https://fastapi.tiangolo.com/), [Uvicorn](https://www.uvicorn.org/)
+- **PDF Extraction**: [PyPDF](https://pypdf.readthedocs.io/) (Text & URI Annotations)
+- **LLM Provider**: [Groq API](https://groq.com/) (`openai/gpt-oss-120b` / Llama Models)
+- **Language**: Python 3, JavaScript (ES6+)
