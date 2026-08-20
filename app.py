@@ -19,11 +19,20 @@ uploaded_file = st.file_uploader("Upload Resume (PDF)", type=["pdf"])
 def _read_file_from_path(path):
     reader = PdfReader(path)
     data = ""
-    for page_no in range(len(reader.pages)):
-        page = reader.pages[page_no]
+    urls = []
+    for page in reader.pages:
         text = page.extract_text()
         if text:
-            data += text
+            data += text + "\n"
+        if '/Annots' in page:
+            for annot in page['/Annots']:
+                obj = annot.get_object()
+                if '/A' in obj and '/URI' in obj['/A']:
+                    uri = obj['/A']['/URI']
+                    if uri not in urls:
+                        urls.append(uri)
+    if urls:
+        data += "\n\nExtracted Links/URLs:\n" + "\n".join(urls) + "\n"
     return data
 
 def clean_json_response(response_text: str) -> str:

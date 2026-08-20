@@ -12,17 +12,27 @@ def ats_extractor(resume_data: str) -> str:
     Extracts resume information using Groq API and returns JSON string.
     """
     prompt = '''
-    You are an AI bot designed to act as a professional for parsing resumes. 
-    You are given a resume and your job is to extract the following information:
-    1. Full name
-    2. Email ID
-    3. GitHub portfolio
-    4. LinkedIn ID
-    5. Employment details
-    6. Technical skills
-    7. Soft skills
+    You are an expert AI bot designed to parse resumes for an Applicant Tracking System (ATS). 
+    Extract candidate information from the provided resume text and return a JSON object with EXACTLY the following structure:
+    {
+      "full_name": string or null,
+      "email": string or null,
+      "phone": string or null,
+      "github_url": string or null,
+      "linkedin_url": string or null,
+      "portfolio_urls": list of strings,
+      "employment_details": list of objects or null,
+      "education": list of objects or null,
+      "technical_skills": list of strings,
+      "soft_skills": list of strings,
+      "projects": list of objects
+    }
 
-    Give the extracted information in JSON format only.
+    Rules:
+    - Extract full URLs for github_url (e.g., https://github.com/username) and linkedin_url (e.g., https://www.linkedin.com/in/username). Look closely at any Extracted Links/URLs section or inline text.
+    - Extract ALL projects mentioned in the resume under "projects". Do not skip or omit any project.
+    - If a field is missing or not present in the resume, set its value to null (or [] for lists).
+    - Return ONLY valid JSON matching this schema.
     '''
 
     groq_client = Groq(api_key=api_key)
@@ -33,8 +43,9 @@ def ats_extractor(resume_data: str) -> str:
             {"role": "system", "content": prompt},
             {"role": "user", "content": resume_data}
         ],
+        response_format={"type": "json_object"},
         temperature=0.0,
-        max_tokens=1500
+        max_tokens=4000
     )
 
     data = response.choices[0].message.content
