@@ -20,6 +20,7 @@ pnpm-debug.log*
 # Uploaded Data & Scratch Files
 __DATA__/
 scratch/
+*.pdf
 
 # Secrets & Local Configs
 .env

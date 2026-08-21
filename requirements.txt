@@ -5,3 +5,5 @@ pypdf>=6.0.0
 groq>=1.0.0
 streamlit>=1.30.0
 requests>=2.31.0
+reportlab>=4.0.0
+

@@ -13,8 +13,9 @@ It extracts unstructured text and hidden PDF hyperlink annotations from candidat
 - **Modern React + Vite Frontend**:
   - Drag-and-drop PDF resume upload dropzone.
   - Real-time loading indicator and error handling.
-  - Candidate profile card displaying **Name**, **Email** (mailto), **Phone**, **LinkedIn**, **GitHub**, **Portfolio URLs**, **Technical Skills pills**, **Education**, and **Projects**.
-- **Structured JSON Engine**: Uses Groq API with enforced JSON output mode (`response_format={"type": "json_object"}`) and an extended token budget to extract all skills, education details, and project portfolios without omission.
+  - Comprehensive Candidate Dashboard displaying **Name**, **Email** (mailto), **Phone**, **LinkedIn**, **GitHub**, **Portfolio URLs**, **Technical Skills pills**, **Achievements & Honors**, **Education**, and **Projects**.
+  - **Client-Side JSON Export**: One-click `Download JSON` button generates a formatted `<Candidate_Name>_resume.json` file directly on the frontend using browser Blobs without additional API calls.
+- **Structured JSON Engine**: Uses Groq API with enforced JSON output mode (`response_format={"type": "json_object"}`) and an extended token budget (`4000` tokens) to extract all candidate sections without omission.
 - **Legacy Streamlit Support**: Preserves the original Streamlit interface ([`app.py`](app.py)).
 
 ---
