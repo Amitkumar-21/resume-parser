@@ -8,10 +8,16 @@ from resumeparser import ats_extractor
 
 app = FastAPI(title="ATS Resume Parser API", version="1.0.0")
 
-# Enable CORS for frontend development
+# Enable CORS for local development and deployed Vercel frontend
+origins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://resume-parser-react.vercel.app",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
