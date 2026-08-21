@@ -1,16 +1,13 @@
 import os
 from groq import Groq
 
-# Get API key from environment variable
-api_key = os.getenv("GROQ_API_KEY")
-if not api_key:
-    raise ValueError("Please set the GROQ_API_KEY environment variable.")
-
-
 def ats_extractor(resume_data: str) -> str:
     """
     Extracts resume information using Groq API and returns JSON string.
     """
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key:
+        raise ValueError("GROQ_API_KEY environment variable is missing.")
     prompt = '''
     You are an expert AI bot designed to parse resumes for an Applicant Tracking System (ATS). 
     Extract candidate information from the provided resume text and return a JSON object with EXACTLY the following structure:

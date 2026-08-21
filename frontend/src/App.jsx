@@ -83,7 +83,10 @@ export default function App() {
 
   const handleParseResume = async () => {
     if (!file) {
-      setError('Please select or drop a PDF file first.');
+      setError({
+        message: 'Please select or drop a PDF file first.',
+        code: 'INVALID_PDF'
+      });
       return;
     }
 
@@ -99,16 +102,30 @@ export default function App() {
         body: formData,
       });
 
+      const data = await response.json().catch(() => null);
+
       if (!response.ok) {
-        const errData = await response.json().catch(() => ({ detail: 'Failed to process resume' }));
-        throw new Error(errData.detail || `Server error: ${response.status}`);
+        const errObj = data?.error || {};
+        const message = errObj.message || (typeof data?.detail === 'string' ? data.detail : null) || 'Something went wrong while processing your resume. Please try again.';
+        const code = errObj.code || 'INTERNAL_SERVER_ERROR';
+        setError({ message, code });
+        return;
       }
 
-      const data = await response.json();
-      setResumeData(data);
+      if (data) {
+        setResumeData(data);
+      } else {
+        setError({
+          message: 'Something went wrong while processing your resume. Please try again.',
+          code: 'INTERNAL_SERVER_ERROR'
+        });
+      }
     } catch (err) {
       console.error('Error parsing resume:', err);
-      setError(err.message || 'An error occurred while parsing the resume.');
+      setError({
+        message: 'Something went wrong while processing your resume. Please try again.',
+        code: 'INTERNAL_SERVER_ERROR'
+      });
     } finally {
       setLoading(false);
     }
@@ -257,12 +274,28 @@ export default function App() {
 
         {/* Error Alert */}
         {error && (
-          <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-start gap-3 text-red-400 text-sm">
-            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-            <div>
-              <p className="font-semibold mb-0.5">Parsing Failed</p>
-              <p className="text-red-300/80">{error}</p>
+          <div className="p-4 sm:p-5 rounded-xl bg-red-500/10 border border-red-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-red-400 text-sm shadow-lg backdrop-blur-sm">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-red-400" />
+              <div>
+                <p className="font-semibold mb-0.5 text-red-300">Processing Failed</p>
+                <p className="text-red-200/80 text-xs sm:text-sm leading-relaxed">
+                  {typeof error === 'object' ? error.message : error}
+                </p>
+              </div>
             </div>
+
+            {(typeof error === 'string' || (typeof error === 'object' && error.code !== 'AI_CONFIGURATION_ERROR')) && file && (
+              <button
+                type="button"
+                onClick={handleParseResume}
+                disabled={loading}
+                className="shrink-0 px-3.5 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-200 text-xs font-semibold transition flex items-center justify-center gap-1.5 disabled:opacity-50"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+                <span>Try Again</span>
+              </button>
+            )}
           </div>
         )}
 
