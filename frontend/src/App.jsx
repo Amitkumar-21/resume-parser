@@ -14,7 +14,8 @@ import {
   Code,
   ExternalLink,
   RefreshCw,
-  Trophy
+  Trophy,
+  Download
 } from 'lucide-react';
 
 const API_ENDPOINT = 'http://localhost:8000/api/parse-resume';
@@ -119,6 +120,33 @@ export default function App() {
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+  };
+
+  const handleDownloadJson = () => {
+    if (!resumeData) return;
+
+    const jsonString = JSON.stringify(resumeData, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+
+    let filename = 'parsed_resume.json';
+    if (resumeData.full_name && typeof resumeData.full_name === 'string' && resumeData.full_name.trim().length > 0) {
+      const sanitizedName = resumeData.full_name
+        .trim()
+        .replace(/[^a-zA-Z0-9_\-\s]/g, '')
+        .replace(/\s+/g, '_');
+      if (sanitizedName) {
+        filename = `${sanitizedName}_resume.json`;
+      }
+    }
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -240,19 +268,30 @@ export default function App() {
         {/* Candidate Profile Card */}
         {resumeData && (
           <div className="space-y-6">
-            {/* Top Bar with Reset Button */}
-            <div className="flex items-center justify-between">
+            {/* Top Bar with Reset & Download Buttons */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-2 text-emerald-400 text-sm font-medium">
                 <CheckCircle2 className="w-5 h-5" />
                 <span>Resume parsed successfully</span>
               </div>
-              <button
-                onClick={resetForm}
-                className="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition flex items-center gap-1.5"
-              >
-                <RefreshCw className="w-3.5 h-3.5" />
-                <span>Parse Another Resume</span>
-              </button>
+              <div className="flex items-center gap-2.5">
+                <button
+                  type="button"
+                  onClick={handleDownloadJson}
+                  className="px-3.5 py-1.5 rounded-lg bg-indigo-600/20 border border-indigo-500/30 hover:bg-indigo-600/30 text-indigo-300 text-xs font-medium transition flex items-center gap-1.5 shadow-sm hover:border-indigo-500/50"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download JSON</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition flex items-center gap-1.5"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>Parse Another Resume</span>
+                </button>
+              </div>
             </div>
 
             {/* Profile Overview Card */}
